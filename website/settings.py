@@ -65,10 +65,10 @@ DATABASES = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'sql12219366',
-        'USER': 'sql12219366',
-        'PASSWORD': 'C3iqBJH7Hb',
-        'HOST': 'sql12.freemysqlhosting.net',
+        'NAME': 'wolkenMusicDB',
+        'USER': 'root',
+        'PASSWORD': 'root',
+        'HOST': 'localhost',
         'PORT': '3306',
     }
 }
