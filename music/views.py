@@ -9,6 +9,8 @@ from .models import Album, Song
 AUDIO_FILE_TYPES = ['wav', 'mp3', 'ogg']
 IMAGE_FILE_TYPES = ['png', 'jpg', 'jpeg']
 
+counter = 0
+
 
 def create_album(request):
     if not request.user.is_authenticated():
@@ -94,8 +96,61 @@ def detail(request, album_id):
         song_list = []
         for s in album.song_set.all():
             song_list.append(s)
-        c = Counter()
-        return render(request, 'music/detail.html', {'album': album, 'user': user, 'song_list': song_list, 'counter': c})
+        return render(request, 'music/detail.html', {'album': album, 'user': user, 'song_list': song_list})
+
+
+def play(request, album_id, song_id):
+    if not request.user.is_authenticated():
+        return render(request,'music/login.html')
+    else:
+        user = request.user
+        album = get_object_or_404(Album,pk=album_id)
+        global counter
+        counter = int(song_id);
+        song_list = []
+        for s in album.song_set.all():
+            song_list.append(s)
+        song = song_list[counter]
+        return render(request, 'music/detail.html', {'album': album, 'user': user, 'song_list': song_list, 'curSong': song})
+
+
+def nextS(request, album_id):
+    if not request.user.is_authenticated():
+        return render(request,'music/login.html')
+    else:
+        user = request.user
+        album = get_object_or_404(Album,pk=album_id)
+        global counter
+        song_list = []
+        for s in album.song_set.all():
+            song_list.append(s)
+        if counter < len(song_list)-1:
+            counter += 1
+            song = song_list[counter]
+        elif counter == len(song_list)-1:
+            counter += 1
+            song = None
+        else:
+            song = None
+        return render(request, 'music/detail.html', {'album': album, 'user': user, 'song_list': song_list, 'curSong': song})
+
+
+def prevS(request, album_id):
+    if not request.user.is_authenticated():
+        return render(request,'music/login.html')
+    else:
+        user = request.user
+        album = get_object_or_404(Album,pk=album_id)
+        global counter
+        song_list = []
+        for s in album.song_set.all():
+            song_list.append(s)
+        if counter > 0:
+            counter -= 1
+        elif counter <= 0:
+            counter = 0
+        song = song_list[counter]
+        return render(request, 'music/detail.html', {'album': album, 'user': user, 'song_list': song_list, 'curSong': song})
 
 
 def favorite(request, song_id):

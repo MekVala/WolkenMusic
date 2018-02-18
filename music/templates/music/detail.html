@@ -4,27 +4,18 @@
 {% load index %}
 {% block body %}
 
- <script>
-        function set_source(url, coun){
-        var i = 0;
-        alert('in function');
-        while(i < coun)
-        {
-            alert('step '+i);
-        }
-            {{ counter.setcounterzero }}
-            alert({{counter.count}});
-            var audio = document.getElementById('audio');
-            var source = document.getElementById('audiosource');
-            source.src = url;
-            audio.load();
-            audio.play();
-        }
-
-        function next(){
-            alert({{ counter.count }})
-        }
-    </script>
+{%if curSong %}
+<script>
+window.onload = function(){
+    var url  = '{{ curSong.audio_file.url }}';
+    var audio = document.getElementById('audio');
+    var source = document.getElementById('asource');
+    source.src = url;
+    audio.load();
+    audio.play();
+}
+</script>
+{% endif %}
 <div class="container-fluid songs-container">
 
     <div class="row">
@@ -77,11 +68,11 @@
                             <tr>
                                 <td>{{ song.song_title }}</td>
                                 <td>
-                                    <!--<a target="_blank" href="{{ song.audio_file.url }}">-->
-                                        <button type="button" class="btn btn-success btn-xs" onclick="set_source('{{ song.audio_file.url}}',{{ forloop.counter0 }})">
+                                    <a href="{% url 'music:play' album.id forloop.counter0 %}">
+                                        <button type="button" class="btn btn-success btn-xs" >
                                             <span class="glyphicon glyphicon-play"></span>&nbsp; Play
                                         </button>
-                                   <!-- </a>-->
+                                    </a>
                                 </td>
                                 <td>
                                     <a href="{% url 'music:favorite' song.id %}" class="btn-favorite"><span class="glyphicon glyphicon-star {% if song.is_favorite %}active{% endif %}"></span></a>
@@ -107,16 +98,16 @@
 
     </div>
     <div id="player" style="height:60px;border-bottom:3px solid #dfd4ce;border-top: 3px solid #dfd4ce;padding:0 5%;position:fixed;bottom:0;width:100%;">
-        <button type="button" onclick="">
-            Previous
-        </button>
+        <a href="{% url 'music:prev' album.id%}">
+            <button type="button">Previous</button>
+        </a>
         <audio id="audio" controls="controls" style="margin:10px">
-            <source id="audiosource" src=""/>
+            <source id="asource" src=""/>
             Your Browser Does Not Support the audio format
         </audio>
-        <button type="button" onclick="next()">
-            Next
-        </button>
+        <a href="{% url 'music:next' album.id%}">
+            <button type="button" onclick="">Next</button>
+        </a>
     </div>
 </div>
 {% endblock %}
