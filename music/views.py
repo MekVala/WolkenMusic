@@ -3,6 +3,8 @@ from django.contrib.auth import logout
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Q
+from django.views.generic.edit import UpdateView
+from django.core.urlresolvers import reverse_lazy
 from .forms import AlbumForm, SongForm, UserForm
 from .models import Album, Song
 
@@ -268,6 +270,16 @@ def songs(request, filter_by):
             'song_list': users_songs,
             'filter_by': filter_by,
         })
+
+
+class AlbumUpdate(UpdateView):
+    form_class = AlbumForm
+    model = Album
+    template_name = 'music/update_album.html'
+    success_url = reverse_lazy('music:index')
+
+    def get_queryset(self):
+        return Album.objects.all()
 
 
 class Counter:

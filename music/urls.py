@@ -19,4 +19,5 @@ urlpatterns = [
     url(r'^(?P<album_id>[0-9]+)/play/(?P<song_id>[0-9]+)/$', views.play, name='play'),
     url(r'^(?P<album_id>[0-9]+)/next/$', views.nextS, name='next'),
     url(r'^(?P<album_id>[0-9]+)/prev/$', views.prevS, name='prev'),
+    url(r'album/(?P<pk>[0-9]+)/$', views.AlbumUpdate.as_view(), name="album_update")
 ]
