@@ -70,7 +70,7 @@ window.onload = function(){
                             <tr>
                                 <td>{{ song.song_title }}</td>
                                 <td>
-                                    <a href="{% url 'music:play' album.id forloop.counter0 %}">
+                                    <a href="{% url 'music:playAlbum' album.id forloop.counter0 %}">
                                         <button type="button" class="btn btn-success btn-xs" >
                                             <span class="glyphicon glyphicon-play"></span>&nbsp; Play
                                         </button>
@@ -100,14 +100,14 @@ window.onload = function(){
 
     </div>
     <div id="player" style="height:60px;border-bottom:3px solid #dfd4ce;border-top: 3px solid #dfd4ce;padding:0 5%;position:fixed;bottom:0;width:100%;">
-        <a href="{% url 'music:prev' album.id%}">
+        <a href="{% url 'music:prevAlbum' album.id%}">
             <button type="button">Previous</button>
         </a>
         <audio id="audio" controls="controls" style="margin:10px">
             <source id="asource" src=""/>
             Your Browser Does Not Support the audio format
         </audio>
-        <a href="{% url 'music:next' album.id%}">
+        <a href="{% url 'music:nextAlbum' album.id%}">
             <button type="button" onclick="">Next</button>
         </a>
     </div>

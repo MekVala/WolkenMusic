@@ -1,12 +1,13 @@
-from django.contrib.auth.models import Permission, User
+from django.contrib.auth.models import User
 from django.db import models
 
 
 class Album(models.Model):
-    user = models.ForeignKey(User,on_delete=models.CASCADE, default=1)
+    GENRE_TYPE =(("Pop", "Pop"), ("Rock", "Rock"), ("Classical", "Classical"), ("Folk", "Folk"), ("Unknown", "Unknown"))
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
     artist = models.CharField(max_length=250)
     album_title = models.CharField(max_length=500)
-    genre = models.CharField(max_length=100)
+    genre = models.CharField(max_length=100,choices=GENRE_TYPE)
     album_logo = models.FileField()
     is_favorite = models.BooleanField(default=False)
 
