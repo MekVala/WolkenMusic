@@ -1,7 +1,6 @@
 {% extends 'music/base.html' %}
 {% block title %}{{ album }}{% endblock %}
 {% block albums_active %}active{% endblock %}
-{% load index %}
 {% block body %}
 
 {%if curSong %}
@@ -10,6 +9,10 @@ window.onload = function(){
     var url  = '{{ curSong.audio_file.url }}';
     var audio = document.getElementById('audio');
     var source = document.getElementById('asource');
+    var sname = document.getElementById('player_sname');
+    var aname = document.getElementById('player_aname');
+    sname.innerText='{{ curSong.song_title }}';
+    aname.innerText='Album: '+'{{ curSong.album.album_title }}';
     source.src = url;
     audio.load();
     audio.play();
@@ -99,17 +102,19 @@ window.onload = function(){
         </div>
 
     </div>
-    <div id="player" style="height:60px;border-bottom:3px solid #dfd4ce;border-top: 3px solid #dfd4ce;padding:0 5%;position:fixed;bottom:0;width:100%;">
-        <a href="{% url 'music:prevAlbum' album.id%}">
-            <button type="button">Previous</button>
-        </a>
-        <audio id="audio" controls="controls" style="margin:10px">
+    <div id="player" style="border-bottom:3px solid #dfd4ce;border-top: 3px solid #dfd4ce;padding:0 5%;position:fixed;bottom:0;width:100%;">
+
+        <audio id="audio" controls="controls" style="margin:10px;width:500px">
             <source id="asource" src=""/>
             Your Browser Does Not Support the audio format
-        </audio>
+        </audio><br>
+         <a href="{% url 'music:prevAlbum' album.id%}">
+            <button type="button">Previous</button>
+        </a>
         <a href="{% url 'music:nextAlbum' album.id%}">
             <button type="button" onclick="">Next</button>
-        </a>
+        </a><div id="player_sname"></div>
+        <div id="player_aname"></div>
     </div>
 </div>
 {% endblock %}
