@@ -5,6 +5,11 @@ from django.shortcuts import render, get_object_or_404
 from django.db.models import Q
 from django.views.generic.edit import UpdateView
 from django.core.urlresolvers import reverse_lazy
+from django.shortcuts import redirect
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth import update_session_auth_hash
+from django.contrib import messages
 from .forms import AlbumForm, SongForm, UserForm
 from .models import Album, Song
 from mutagen.id3 import ID3
@@ -69,8 +74,8 @@ def create_song(request, album_id):
                 'error_message': 'Audio file must be WAV, MP3, or OGG',
             }
             return render(request, 'music/create_song.html', context)
-        audio = ID3(PROJECT_ROOT + song.audio_file.url)
-        song.song_title = audio["TIT2"].text[0];
+        audio = ID3(song.audio_file)
+        song.song_title = audio["TIT2"].text[0]
         song.save()
         return render(request, 'music/detail.html', {'album': album})
     context = {
@@ -361,6 +366,24 @@ def songs(request, filter_by):
         })
 
 
+def update_profile(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)
+            messages.success(request, 'Your password was successfully updated!')
+
+            return redirect('music:update_password')
+
+    else:
+        form = PasswordChangeForm(request.user)
+
+    return render(request, 'music/update_password.html', {
+        'form': form,
+    })
+
+
 class AlbumUpdate(UpdateView):
     form_class = AlbumForm
     model = Album
@@ -369,3 +392,13 @@ class AlbumUpdate(UpdateView):
 
     def get_queryset(self):
         return Album.objects.all()
+
+
+class UpdateProfile(UpdateView):
+        model = User
+        fields = ['username', 'email']
+        template_name = 'music/update_profile.html'
+        success_url = reverse_lazy('music:update_profile')
+
+        def get_object(self, queryset=None):
+            return self.request.user

@@ -23,4 +23,6 @@ urlpatterns = [
     url(r'^songs/(?P<filter_by>[a-zA_Z]+)/play/(?P<song_id>[0-9]+)/$', views.playsongs, name='playsong'),
     url(r'^songs/(?P<filter_by>[a-zA_Z]+)/next/$', views.nextsongs, name='nextsong'),
     url(r'^songs/(?P<filter_by>[a-zA_Z]+)/prev/$', views.prevsongs, name='prevsong'),
+    url(r'^updatepassword/', views.update_profile, name='update_password'),
+    url(r'^updateprofile/', views.UpdateProfile.as_view(), name='update_profile'),
 ]
