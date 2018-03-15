@@ -373,7 +373,6 @@ def update_profile(request):
             user = form.save()
             update_session_auth_hash(request, user)
             messages.success(request, 'Your password was successfully updated!')
-
             return redirect('music:update_password')
 
     else:
@@ -402,3 +401,14 @@ class UpdateProfile(UpdateView):
 
         def get_object(self, queryset=None):
             return self.request.user
+
+
+class UpdateSong(UpdateView):
+    model = Song
+    fields = ['album', 'song_title', 'audio_file']
+    template_name = 'music/update_song.html'
+    success_url = reverse_lazy('music:song_update')
+
+    def get_queryset(self):
+        return Song.objects.all()
+

@@ -2,12 +2,13 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
+from music import views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^music/', include('music.urls')),
     url(r'^', include('music.urls')),
-    url(r'^music/accounts/', include('django.contrib.auth.urls')),
+    url(r'^songs/(?P<pk>[0-9]+)/update/$', views.UpdateSong.as_view(), name="song_update"),
 ]
 
 if settings.DEBUG:
