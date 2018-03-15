@@ -407,7 +407,7 @@ class UpdateSong(UpdateView):
     model = Song
     fields = ['album', 'song_title', 'audio_file']
     template_name = 'music/update_song.html'
-    success_url = reverse_lazy('music:song_update')
+    success_url = reverse_lazy('music:index')
 
     def get_queryset(self):
         return Song.objects.all()
