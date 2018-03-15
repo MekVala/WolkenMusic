@@ -405,7 +405,7 @@ class UpdateProfile(UpdateView):
 
 class UpdateSong(UpdateView):
     model = Song
-    fields = ['album', 'song_title', 'audio_file']
+    fields = ['album', 'song_title']
     template_name = 'music/update_song.html'
     success_url = reverse_lazy('music:index')
 
