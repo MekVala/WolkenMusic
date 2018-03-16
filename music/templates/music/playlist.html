@@ -1,0 +1,64 @@
+{% extends 'music/base.html' %}
+{% block title %}Playlist{% endblock %}
+{% block playlist_active %}active{% endblock %}
+{% block body %}
+{% if message %}
+    message
+{% endif %}
+    <div class="container-fluid songs-container">
+
+    <div class="row">
+        <div class="col-sm-12">
+            <ul class="nav nav-pills" style="margin-bottom: 10px;">
+                <li role="presentation" {% if filter_by == 'all' %}class="active"{% endif %}><a href="{% url 'music:playlists' 'all' %}">View All</a></li>
+                <li role="presentation" {% if filter_by == 'favorites' %}class="active"{% endif %}><a href="{% url 'music:playlists' 'favorites' %}">Favorites</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="row">
+
+        <div class="col-sm-12">
+
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    {% if playlist_list %}
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Playlist Name</th>
+                                <th>Favorite</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            {% for playlist in playlist_list %}
+                                <tr>
+                                    <td><a href="{% url 'music:playlist_songs' playlist.id 'all' %}">{{ playlist.playlist_name }}</a></td>
+                                    <td>
+                                        <a href="{% url 'music:favorite_playlist' playlist.id %}" class="btn-favorite"><span class="glyphicon glyphicon-star {% if playlist.is_favorite %}active{% endif %}"></span></a>
+                                    </td>
+                                    <td>
+                                        <form action="{% url 'music:delete_playlist' playlist.id %}" method="post" style="display: inline;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="playlist_id" value="{{ playlist.id }}" />
+                                        <button type="submit" class="btn btn-danger btn-xs">
+                                            <span class="glyphicon glyphicon-remove"></span>&nbsp; Delete
+                                        </button>
+                                    </form>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+
+                        </tbody>
+                    </table>
+                    {% else %}
+                        No Playlist To Show !
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

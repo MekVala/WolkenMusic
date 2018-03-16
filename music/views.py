@@ -11,7 +11,7 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from django.contrib import messages
 from .forms import AlbumForm, SongForm, UserForm
-from .models import Album, Song
+from .models import Album, Song, Playlist, PlaylistInfo
 from mutagen.id3 import ID3
 import os.path
 
@@ -75,7 +75,10 @@ def create_song(request, album_id):
             }
             return render(request, 'music/create_song.html', context)
         audio = ID3(song.audio_file)
-        song.song_title = audio["TIT2"].text[0]
+        if 'TIT2' in audio:
+            song.song_title = audio['TIT2'].text[0]
+        else:
+            song.song_title = song.audio_file;
         song.save()
         return render(request, 'music/detail.html', {'album': album})
     context = {
@@ -97,6 +100,12 @@ def delete_song(request, album_id, song_id):
     song = Song.objects.get(pk=song_id)
     song.delete()
     return render(request, 'music/detail.html', {'album': album})
+
+
+def delete_playlist(requset, playlist_id):
+    playlist = get_object_or_404(Playlist,pk=playlist_id)
+    playlist.delete()
+    return render(requset, 'music/playlist.html', {'filter_by': 'all'})
 
 
 def detail(request, album_id):
@@ -263,6 +272,20 @@ def favorite(request, song_id):
         return JsonResponse({'success': True})
 
 
+def favorite_playlist(request, playlist_id):
+    playlist = get_object_or_404(Playlist, pk=playlist_id)
+    try:
+        if playlist.is_favorite:
+            playlist.is_favorite = False
+        else:
+            playlist.is_favorite = True
+        playlist.save()
+    except (KeyError, Playlist.DoesNotExist):
+        return JsonResponse({'success': False})
+    else:
+        return JsonResponse({'success': True})
+
+
 def favorite_album(request, album_id):
     album = get_object_or_404(Album, pk=album_id)
     try:
@@ -355,7 +378,7 @@ def songs(request, filter_by):
             for album in Album.objects.filter(user=request.user):
                 for song in album.song_set.all():
                     song_ids.append(song.pk)
-            users_songs = Song.objects.filter(pk__in=song_ids)
+            users_songs = Song.objects.filter(pk__in=song_ids).order_by('song_title')
             if filter_by == 'favorites':
                 users_songs = users_songs.filter(is_favorite=True)
         except Album.DoesNotExist:
@@ -363,6 +386,47 @@ def songs(request, filter_by):
         return render(request, 'music/songs.html', {
             'song_list': users_songs,
             'filter_by': filter_by,
+        })
+
+
+def playlists(request, filter_by):
+    if not request.user.is_authenticated():
+        return render(request, 'music/login.html')
+    else:
+        try:
+            # users_playlist = Playlist.objects.all()
+            playlist_ids = []
+            for playlist in Playlist.objects.filter(user=request.user):
+                playlist_ids.append(playlist.pk)
+            users_playlist = Playlist.objects.filter(pk__in=playlist_ids).order_by('playlist_name')
+            if filter_by == 'favorites':
+                users_playlist = users_playlist.filter(is_favorite=True)
+        except Playlist.DoesNotExist:
+            users_playlist = []
+        return render(request, 'music/playlist.html', {
+            'playlist_list': users_playlist,
+            'filter_by': filter_by,
+        })
+
+
+def playlist_songs(request, filter_by, playlist_id):
+    if not request.user.is_authenticated():
+        return render(request, 'music/login.html')
+    else:
+        try:
+            song_ids = []
+            for playlist in Playlist.objects.filter(id=playlist_id):
+                for playlistinfo in PlaylistInfo.objects.filter(playlist=playlist):
+                    song_ids.append(playlistinfo.song.pk)
+            users_songs = Song.objects.filter(pk__in=song_ids).order_by('song_title')
+            if filter_by == 'favorites':
+                users_songs = users_songs.filter(is_favorite=True)
+        except Playlist.DoesNotExist:
+            users_songs = []
+        return render(request, 'music/playlist_detail.html', {
+            'song_list': users_songs,
+            'filter_by': filter_by,
+            'playlist_id': playlist_id,
         })
 
 
@@ -411,4 +475,6 @@ class UpdateSong(UpdateView):
 
     def get_queryset(self):
         return Song.objects.all()
+
+
 
