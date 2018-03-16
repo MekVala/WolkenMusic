@@ -88,6 +88,9 @@ def create_song(request, album_id):
     return render(request, 'music/create_song.html', context)
 
 
+#def add_to_playlist(request,song_id):
+
+
 def delete_album(request, album_id):
     album = Album.objects.get(pk=album_id)
     album.delete()
@@ -430,23 +433,6 @@ def playlist_songs(request, filter_by, playlist_id):
         })
 
 
-def update_profile(request):
-    if request.method == 'POST':
-        form = PasswordChangeForm(request.user, request.POST)
-        if form.is_valid():
-            user = form.save()
-            update_session_auth_hash(request, user)
-            messages.success(request, 'Your password was successfully updated!')
-            return redirect('music:update_password')
-
-    else:
-        form = PasswordChangeForm(request.user)
-
-    return render(request, 'music/update_password.html', {
-        'form': form,
-    })
-
-
 class AlbumUpdate(UpdateView):
     form_class = AlbumForm
     model = Album
@@ -458,8 +444,9 @@ class AlbumUpdate(UpdateView):
 
 
 class UpdateProfile(UpdateView):
-        model = User
-        fields = ['username', 'email']
+        #model = User
+        #fields = ['username', 'email']
+        form_class = UserForm
         template_name = 'music/update_profile.html'
         success_url = reverse_lazy('music:update_profile')
 
