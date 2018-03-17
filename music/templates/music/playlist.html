@@ -22,6 +22,9 @@
 
             <div class="panel panel-default">
                 <div class="panel-body">
+                    {% if error_message %}
+                        <p><strong>{{ error_message }}</strong></p>
+                    {% endif %}
                     {% if playlist_list %}
                     <table class="table">
                         <thead>
@@ -32,7 +35,6 @@
                             </tr>
                         </thead>
                         <tbody>
-
                             {% for playlist in playlist_list %}
                                 <tr>
                                     <td><a href="{% url 'music:playlist_songs' playlist.id 'all' %}">{{ playlist.playlist_name }}</a></td>

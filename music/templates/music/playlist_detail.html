@@ -44,6 +44,7 @@
                                 <th>Audio File</th>
                                 <th>Album</th>
                                 <th>Favorite</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -66,6 +67,15 @@
                                     </td>
                                     <td>
                                         <a href="{% url 'music:favorite' song.id %}" class="btn-favorite"><span class="glyphicon glyphicon-star {% if song.is_favorite %}active{% endif %}"></span></a>
+                                    </td>
+                                    <td>
+                                        <form action="{% url 'music:remove_song' song.id %}" method="post" style="display: inline;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="song_id" value="{{ song.id }}" />
+                                        <button type="submit" class="btn btn-danger btn-xs">
+                                            <span class="glyphicon glyphicon-remove"></span>&nbsp; Remove From Playlist
+                                        </button>
+                                    </form>
                                     </td>
                                 </tr>
                             {% endfor %}

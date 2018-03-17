@@ -3,14 +3,10 @@ from django.contrib.auth import logout
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Q
+from django.shortcuts import redirect
 from django.views.generic.edit import UpdateView
 from django.core.urlresolvers import reverse_lazy
-from django.shortcuts import redirect
-from django.contrib.auth.models import User
-from django.contrib.auth.forms import PasswordChangeForm
-from django.contrib.auth import update_session_auth_hash
-from django.contrib import messages
-from .forms import AlbumForm, SongForm, UserForm
+from .forms import AlbumForm, SongForm, UserForm, PlaylistInfoForm , PlaylistForm
 from .models import Album, Song, Playlist, PlaylistInfo
 from mutagen.id3 import ID3
 import os.path
@@ -86,9 +82,6 @@ def create_song(request, album_id):
         'form': form,
     }
     return render(request, 'music/create_song.html', context)
-
-
-#def add_to_playlist(request,song_id):
 
 
 def delete_album(request, album_id):
@@ -397,7 +390,6 @@ def playlists(request, filter_by):
         return render(request, 'music/login.html')
     else:
         try:
-            # users_playlist = Playlist.objects.all()
             playlist_ids = []
             for playlist in Playlist.objects.filter(user=request.user):
                 playlist_ids.append(playlist.pk)
@@ -433,6 +425,24 @@ def playlist_songs(request, filter_by, playlist_id):
         })
 
 
+def add_to_song(request, song_id):
+    form = PlaylistInfoForm()
+    if request.POST:
+        playlistinfo = form.save(commit=False)
+        playlistinfo.song = get_object_or_404(Song, id=song_id)
+        playlistinfo.user = request.user
+        playlistinfo.playlist = get_object_or_404(Playlist, id=request.POST['playlist_select'])
+        if PlaylistInfo.objects.filter(song = playlistinfo.song).exists() :
+            error_message = "Already Added !"
+            return render(request, 'music/playlist.html', {'filter_by': 'all', 'error_message': error_message})
+        else:
+            playlistinfo.save()
+        return redirect('music:playlists', 'all')
+
+    playlist_list = Playlist.objects.filter(user=request.user)
+    return render(request, 'music/add_to_playlist.html', {'song_id': song_id, 'playlist_list': playlist_list})
+
+
 class AlbumUpdate(UpdateView):
     form_class = AlbumForm
     model = Album
@@ -444,8 +454,6 @@ class AlbumUpdate(UpdateView):
 
 
 class UpdateProfile(UpdateView):
-        #model = User
-        #fields = ['username', 'email']
         form_class = UserForm
         template_name = 'music/update_profile.html'
         success_url = reverse_lazy('music:update_profile')
@@ -464,4 +472,9 @@ class UpdateSong(UpdateView):
         return Song.objects.all()
 
 
+def remove_playlist_song(requset, song_id):
+    song = get_object_or_404(Song, id=song_id)
+    playlistinfo = PlaylistInfo.objects.filter(song=song)
+    playlistinfo.delete()
+    return redirect('music:playlists', 'all')
 

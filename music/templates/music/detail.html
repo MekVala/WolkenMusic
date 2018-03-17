@@ -83,6 +83,12 @@ window.onload = function(){
                                     <a href="{% url 'music:favorite' song.id %}" class="btn-favorite"><span class="glyphicon glyphicon-star {% if song.is_favorite %}active{% endif %}"></span></a>
                                 </td>
                                 <td>
+                                    <form action="{% url 'music:add_to_playlist' song.id %}" method="GET" style="display: inline;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="song_id" value="{{ song.id }}" />
+                                        <button type="submit" class="btn btn-info btn-xs">
+                                            <span class="glyphicon glyphicon-plus"></span>&nbsp; Add To Playlist
+                                        </button></form>
                                     <form action="{% url 'song_update' song.id %}" method="post" style="display: inline;">
                                         {% csrf_token %}
                                         <input type="hidden" name="song_id" value="{{ song.id }}" />

@@ -27,5 +27,8 @@ urlpatterns = [
     url(r'^playlists/(?P<filter_by>[a-zA_Z]+)/$', views.playlists, name='playlists'),
     url(r'^playlists/(?P<playlist_id>[0-9]+)/favorite/$', views.favorite_playlist, name='favorite_playlist'),
     url(r'^playlists/(?P<playlist_id>[0-9]+)/delete/$', views.delete_playlist, name='delete_playlist'),
-    url(r'^playlists/(?P<playlist_id>[0-9]+)/songs/(?P<filter_by>[a-zA_Z]+)/$', views.playlist_songs, name='playlist_songs'),
+    url(r'^playlists/(?P<playlist_id>[0-9]+)/songs/(?P<filter_by>[a-zA_Z]+)/$', views.playlist_songs,
+        name='playlist_songs'),
+    url(r'^playlists/(?P<song_id>[0-9]+)/addsong/$', views.add_to_song, name='add_to_playlist'),
+    url(r'^playlists/(?P<song_id>[0-9]+)/removesong/$', views.remove_playlist_song, name='remove_song'),
 ]
