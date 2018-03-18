@@ -128,6 +128,10 @@ def playalbum(request, album_id, song_id):
         for s in album.song_set.all():
             song_list.append(s)
         song = song_list[counter]
+        temp_counter = song.played_counter
+        temp_counter += 1
+        song.played_counter = temp_counter
+        song.save()
         return render(request, 'music/detail.html', {'album': album, 'user': user, 'song_list': song_list, 'curSong': song})
 
 
@@ -146,6 +150,10 @@ def playsongs(request, filter_by, song_id):
             global counters
             counters = int(song_id)
             song = users_songs[counters]
+            temp_counter = song.played_counter
+            temp_counter += 1
+            song.played_counter = temp_counter
+            song.save()
 
         except Album.DoesNotExist:
             users_songs = []
