@@ -17,6 +17,8 @@ IMAGE_FILE_TYPES = ['png', 'jpg', 'jpeg']
 
 counter = 0
 counters = 0
+counterp = 0
+counteri = 0
 
 
 def create_album(request):
@@ -180,6 +182,10 @@ def nextsongs(request, filter_by):
             if counters < len(users_songs) - 1:
                 counters += 1
                 song = users_songs[counters]
+                temp_counter = song.played_counter
+                temp_counter += 1
+                song.played_counter = temp_counter
+                song.save()
             elif counters == len(users_songs) - 1:
                 counters += 1
                 song = None
@@ -208,6 +214,10 @@ def nextalbum(request, album_id):
         if counter < len(song_list)-1:
             counter += 1
             song = song_list[counter]
+            temp_counter = song.played_counter
+            temp_counter += 1
+            song.played_counter = temp_counter
+            song.save()
         elif counter == len(song_list)-1:
             counter += 1
             song = None
@@ -231,6 +241,10 @@ def prevalbum(request, album_id):
         elif counter <= 0:
             counter = 0
         song = song_list[counter]
+        temp_counter = song.played_counter
+        temp_counter += 1
+        song.played_counter = temp_counter
+        song.save()
         return render(request, 'music/detail.html', {'album': album, 'user': user, 'song_list': song_list, 'curSong': song})
 
 
@@ -252,7 +266,10 @@ def prevsongs(request, filter_by):
             elif counters <= 0:
                 counters = 0
             song = users_songs[counters]
-
+            temp_counter = song.played_counter
+            temp_counter += 1
+            song.played_counter = temp_counter
+            song.save()
         except Album.DoesNotExist:
             users_songs = []
         return render(request, 'music/songs.html', {
@@ -260,6 +277,204 @@ def prevsongs(request, filter_by):
             'filter_by': filter_by,
             'curSong': song
         })
+
+
+def playplaylist(request, filter_by, playlist_id, song_id):
+    if not request.user.is_authenticated():
+        return render(request, 'music/login.html')
+    else:
+        try:
+            song_ids = []
+            for playlist in Playlist.objects.filter(id=playlist_id):
+                for playlistinfo in PlaylistInfo.objects.filter(playlist=playlist):
+                    song_ids.append(playlistinfo.song.pk)
+            users_songs = Song.objects.filter(pk__in=song_ids).order_by('song_title')
+            if filter_by == 'favorites':
+                users_songs = users_songs.filter(is_favorite=True)
+            global counterp
+            counterp = int(song_id)
+            song = users_songs[counterp]
+            temp_counter = song.played_counter
+            temp_counter += 1
+            song.played_counter = temp_counter
+            song.save()
+        except Playlist.DoesNotExist:
+            users_songs = []
+        return render(request, 'music/playlist_detail.html', {
+            'song_list': users_songs,
+            'filter_by': filter_by,
+            'playlist_id': playlist_id,
+            'curSong': song
+        })
+
+
+def nextplaylist(request, filter_by, playlist_id):
+    if not request.user.is_authenticated():
+        return render(request, 'music/login.html')
+    else:
+        try:
+            song_ids = []
+            for playlist in Playlist.objects.filter(id=playlist_id):
+                for playlistinfo in PlaylistInfo.objects.filter(playlist=playlist):
+                    song_ids.append(playlistinfo.song.pk)
+            users_songs = Song.objects.filter(pk__in=song_ids).order_by('song_title')
+            if filter_by == 'favorites':
+                users_songs = users_songs.filter(is_favorite=True)
+            global counterp
+            if counterp < len(users_songs) - 1:
+                counterp += 1
+                song = users_songs[counterp]
+                temp_counter = song.played_counter
+                temp_counter += 1
+                song.played_counter = temp_counter
+                song.save()
+            elif counterp == len(users_songs) - 1:
+                counterp += 1
+                song = None
+            else:
+                song = None
+        except Playlist.DoesNotExist:
+            users_songs = []
+        return render(request, 'music/playlist_detail.html', {
+            'song_list': users_songs,
+            'filter_by': filter_by,
+            'playlist_id': playlist_id,
+            'curSong': song
+        })
+
+
+def prevplaylist(request, filter_by, playlist_id):
+    if not request.user.is_authenticated():
+        return render(request, 'music/login.html')
+    else:
+        try:
+            song_ids = []
+            for playlist in Playlist.objects.filter(id=playlist_id):
+                for playlistinfo in PlaylistInfo.objects.filter(playlist=playlist):
+                    song_ids.append(playlistinfo.song.pk)
+            users_songs = Song.objects.filter(pk__in=song_ids).order_by('song_title')
+            if filter_by == 'favorites':
+                users_songs = users_songs.filter(is_favorite=True)
+            global counterp
+            if counterp > 0:
+                counterp -= 1
+            elif counterp <= 0:
+                counterp = 0
+            song = users_songs[counterp]
+            temp_counter = song.played_counter
+            temp_counter += 1
+            song.played_counter = temp_counter
+            song.save()
+        except Playlist.DoesNotExist:
+            users_songs = []
+        return render(request, 'music/playlist_detail.html', {
+            'song_list': users_songs,
+            'filter_by': filter_by,
+            'playlist_id': playlist_id,
+            'curSong': song
+        })
+
+
+def playindex(request, song_id):
+    if not request.user.is_authenticated():
+        return render(request, 'music/login.html')
+    else:
+        albums = Album.objects.filter(user=request.user)
+        song_results = Song.objects.all()
+        recent_songs = Song.objects.filter(played_counter__gte='5').order_by('-played_counter')[:10]
+        query = request.GET.get("q")
+        if query:
+            albums = albums.filter(
+                Q(album_title__icontains=query) |
+                Q(artist__icontains=query)
+            ).distinct()
+            song_results = song_results.filter(
+                Q(song_title__icontains=query)
+            ).distinct()
+            return render(request, 'music/index.html', {
+                'albums': albums,
+                'songs': song_results,
+            })
+        else:
+            global counteri
+            counteri = int(song_id)
+            song = recent_songs[counteri]
+            temp_counter = song.played_counter
+            temp_counter += 1
+            song.played_counter = temp_counter
+            song.save()
+            return render(request, 'music/index.html', {'albums': albums,'recent_songs':recent_songs, 'curSong': song})
+
+
+def nextindex(request):
+    if not request.user.is_authenticated():
+        return render(request, 'music/login.html')
+    else:
+        albums = Album.objects.filter(user=request.user)
+        song_results = Song.objects.all()
+        recent_songs = Song.objects.filter(played_counter__gte='5').order_by('-played_counter')[:10]
+        query = request.GET.get("q")
+        if query:
+            albums = albums.filter(
+                Q(album_title__icontains=query) |
+                Q(artist__icontains=query)
+            ).distinct()
+            song_results = song_results.filter(
+                Q(song_title__icontains=query)
+            ).distinct()
+            return render(request, 'music/index.html', {
+                'albums': albums,
+                'songs': song_results,
+            })
+        else:
+            global counteri
+            if counteri < len(recent_songs) - 1:
+                counteri += 1
+                song = recent_songs[counteri]
+                temp_counter = song.played_counter
+                temp_counter += 1
+                song.played_counter = temp_counter
+                song.save()
+            elif counteri == len(recent_songs) - 1:
+                counteri += 1
+                song = None
+            else:
+                song = None
+            return render(request, 'music/index.html', {'albums': albums,'recent_songs':recent_songs, 'curSong': song})
+
+
+def previndex(request):
+    if not request.user.is_authenticated():
+        return render(request, 'music/login.html')
+    else:
+        albums = Album.objects.filter(user=request.user)
+        song_results = Song.objects.all()
+        recent_songs = Song.objects.filter(played_counter__gte='5').order_by('-played_counter')[:10]
+        query = request.GET.get("q")
+        if query:
+            albums = albums.filter(
+                Q(album_title__icontains=query) |
+                Q(artist__icontains=query)
+            ).distinct()
+            song_results = song_results.filter(
+                Q(song_title__icontains=query)
+            ).distinct()
+            return render(request, 'music/index.html', {
+                'albums': albums,
+                'songs': song_results,
+            })
+        else:
+            global counteri
+            if counteri > 0:
+                counteri -= 1
+            elif counteri <= 0:
+                counteri = 0
+            song = recent_songs[counteri]
+            temp_counter = song.played_counter
+            temp_counter += 1
+            song.played_counter = temp_counter
+            song.save()
+            return render(request, 'music/index.html', {'albums': albums,'recent_songs':recent_songs, 'curSong': song})
 
 
 def favorite(request, song_id):
@@ -497,4 +712,3 @@ def remove_playlist_song(requset, song_id):
     playlistinfo = PlaylistInfo.objects.filter(song=song)
     playlistinfo.delete()
     return redirect('music:playlists', 'all')
-

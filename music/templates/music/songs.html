@@ -86,7 +86,8 @@
         </div>
 
     </div>
-    <div id="player" style="border-bottom:3px solid #dfd4ce;border-top: 3px solid #dfd4ce;padding:0 5%;position:fixed;bottom:0;width:100%;">
+        {% if curSong %}
+    <div id="player" style="background:#FFFFF;border-bottom:3px solid #dfd4ce;border-top: 3px solid #dfd4ce;padding:0 5%;position:fixed;bottom:0;width:100%;">
            <a href="{% url 'music:prevsong' filter_by %}">
             <button type="button">Previous</button>
         </a>
@@ -100,5 +101,6 @@
          </a><div id="player_sname"></div>
         <div id="player_aname"></div>
     </div>
+        {% endif %}
 </div>
 {% endblock %}

@@ -5,6 +5,9 @@ app_name = 'music'
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),
+    url(r'^play/(?P<song_id>[0-9]+)/$', views.playindex, name='playindex'),
+    url(r'^next/$', views.nextindex, name='nextindex'),
+    url(r'^prev/$', views.previndex, name='previndex'),
     url(r'^register/$', views.register, name='register'),
     url(r'^login_user/$', views.login_user, name='login_user'),
     url(r'^logout_user/$', views.logout_user, name='logout_user'),
@@ -31,4 +34,11 @@ urlpatterns = [
         name='playlist_songs'),
     url(r'^playlists/(?P<song_id>[0-9]+)/addsong/$', views.add_to_song, name='add_to_playlist'),
     url(r'^playlists/(?P<song_id>[0-9]+)/removesong/$', views.remove_playlist_song, name='remove_song'),
+    url(r'^playlists/(?P<playlist_id>[0-9]+)/songs/(?P<filter_by>[a-zA_Z]+)/play/(?P<song_id>[0-9]+)/$',
+        views.playplaylist, name='playplaylist'),
+    url(r'^playlists/(?P<playlist_id>[0-9]+)/songs/(?P<filter_by>[a-zA_Z]+)/next$',
+        views.nextplaylist, name='nextplaylist'),
+    url(r'^playlists/(?P<playlist_id>[0-9]+)/songs/(?P<filter_by>[a-zA_Z]+)/prev/$',
+        views.prevplaylist, name='prevplaylist'),
+
 ]

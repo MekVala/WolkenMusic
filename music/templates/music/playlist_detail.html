@@ -53,11 +53,11 @@
                                     <td>{{ song.song_title }}</td>
                                     <td>{{ song.album.artist }}</td>
                                     <td>
-                                        <!--<a href="{% url 'music:playsong' filter_by forloop.counter0 %}">-->
+                                        <a href="{% url 'music:playplaylist' playlist_id filter_by forloop.counter0 %}">
                                             <button type="button" class="btn btn-success btn-xs">
                                                 <span class="glyphicon glyphicon-play"></span>&nbsp; Play
                                             </button>
-                                        <!--</a>-->
+                                        </a>
                                     </td>
                                     <td>
                                         <a href="{% url 'music:detail' song.album.id %}">
@@ -87,19 +87,21 @@
         </div>
 
     </div>
-    <div id="player" style="border-bottom:3px solid #dfd4ce;border-top: 3px solid #dfd4ce;padding:0 5%;position:fixed;bottom:0;width:100%;">
-           <a href="{% url 'music:prevsong' filter_by %}">
+        {% if curSong %}
+    <div id="player" style="background:#FFFFFF;border-bottom:3px solid #dfd4ce;border-top: 3px solid #dfd4ce;padding:0 5%;position:fixed;bottom:0;width:100%;">
+           <a href="{% url 'music:prevplaylist' playlist_id filter_by %}">
             <button type="button">Previous</button>
         </a>
         <audio id="audio" controls="controls" style="margin:10px">
             <source id="asource" src=""/>
             Your Browser Does Not Support the audio format
         </audio>
-         <a href="{% url 'music:nextsong' filter_by %}">
+         <a href="{% url 'music:nextplaylist' playlist_id filter_by %}">
             <button type="button" onclick="">Next</button>
         </a>
          </a><div id="player_sname"></div>
         <div id="player_aname"></div>
     </div>
+        {% endif %}
 </div>
 {% endblock %}

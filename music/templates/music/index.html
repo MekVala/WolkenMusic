@@ -44,6 +44,7 @@
             {% endfor %}
         {% else %}
             <div class="col-sm-12">
+                <br>
                 <a href="{% url 'music:create_album' %}">
                     <button type="button" class="btn btn-success">
                         <span class="glyphicon glyphicon-plus"></span>&nbsp; Add an Album
@@ -51,13 +52,6 @@
                 </a>
             </div>
         {% endif %}
-            <div>
-                <div class="chart_container" style="height: 200px; width:200px; clear: both;">
-                    <canvas style="width:20px;height:20px;" id="myChart" width="50" height="50"></canvas>
-                </div>
-
-            </div>
-
     </div>
 
     <!-- If user searches and there are songs -->
@@ -161,37 +155,8 @@
                     </table>
                 </div>
             </div>
+
     {% endif %}
-    {{songname}}
-    </div>
+
 </div>
-<script>
-var ctx = document.getElementById("myChart").getContext('2d');
-{%autoescape off%}
-var myChart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-        labels: {{songname}}.map(function(e){
-            return e.substr(0, 10);
-        }),
-        datasets: [{
-            label: '# of Votes',
-            data: {{songcount}},
-            borderWidth: 1
-        }]
-    },
-    options: {
-        scales: {
-            yAxes: [{
-                ticks: {
-                    beginAtZero:true
-                }
-            }]
-        }
-    }
-});
-
-{%endautoescape%}
-</script>
 {% endblock %}
-

@@ -29,7 +29,7 @@ class Song(models.Model):
 class Playlist(models.Model):
     playlist_name = models.CharField(max_length=250)
     is_favorite = models.BooleanField(default=False)
-    user = models.ForeignKey(User, on_delete=models.CASCADE,default=1)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
 
     def __str__(self):
         return self.playlist_name
@@ -39,3 +39,11 @@ class PlaylistInfo(models.Model):
     playlist = models.ForeignKey(Playlist, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
     song = models.ForeignKey(Song)
+
+
+class PlayedSummery(Song):
+
+    class Meta:
+        proxy = True
+        verbose_name = 'Song Played'
+        verbose_name_plural = 'Songs Played'

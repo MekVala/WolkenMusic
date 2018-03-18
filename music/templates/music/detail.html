@@ -114,7 +114,8 @@ window.onload = function(){
         </div>
 
     </div>
-    <div id="player" style="border-bottom:3px solid #dfd4ce;border-top: 3px solid #dfd4ce;padding:0 5%;position:fixed;bottom:0;width:100%;">
+    {% if curSong %}
+    <div id="player" style="background:#FFFFFF;border-bottom:3px solid #dfd4ce;border-top: 3px solid #dfd4ce;padding:0 5%;position:fixed;bottom:0;width:100%;">
 
         <audio id="audio" controls="controls" style="margin:10px;width:500px">
             <source id="asource" src=""/>
@@ -128,5 +129,6 @@ window.onload = function(){
         </a><div id="player_sname"></div>
         <div id="player_aname"></div>
     </div>
+    {% endif %}
 </div>
 {% endblock %}
