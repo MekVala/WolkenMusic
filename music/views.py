@@ -710,3 +710,16 @@ def remove_playlist_song(requset, song_id):
     playlistinfo = PlaylistInfo.objects.filter(song=song)
     playlistinfo.delete()
     return redirect('music:playlists', 'all')
+
+
+def create_playlist(request):
+    if not request.user.is_authenticated():
+        return render(request, 'music/login.html')
+    else:
+        form = PlaylistForm(request.POST or None)
+        if form.is_valid():
+            playlist = form.save(commit=False)
+            playlist.user = request.user
+            playlist.save()
+            return redirect('music:playlists', 'all')
+        return render(request, 'music/create_playlist.html', {"form": form})

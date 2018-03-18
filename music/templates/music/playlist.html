@@ -5,8 +5,15 @@
 {% if message %}
     message
 {% endif %}
-    <div class="container-fluid songs-container">
 
+    <div class="col-sm-12">
+        <a href="{% url 'music:create_playlist' %}">
+            <button style="float:right;" type="button" class="btn btn-success">
+                <span class="glyphicon glyphicon-plus"></span>&nbsp; Add New Playlist
+            </button>
+        </a>
+    </div>
+    <div class="container-fluid songs-container">
     <div class="row">
         <div class="col-sm-12">
             <ul class="nav nav-pills" style="margin-bottom: 10px;">
@@ -17,9 +24,7 @@
     </div>
 
     <div class="row">
-
         <div class="col-sm-12">
-
             <div class="panel panel-default">
                 <div class="panel-body">
                     {% if error_message %}
