@@ -535,8 +535,6 @@ def index(request):
         for song in temp:
             songname.append(song.song_title)
             songcount.append(int(song.sum))
-
-
         query = request.GET.get("q")
         if query:
             albums = albums.filter(
