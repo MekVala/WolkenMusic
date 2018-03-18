@@ -310,6 +310,7 @@ def index(request):
     else:
         albums = Album.objects.filter(user=request.user)
         song_results = Song.objects.all()
+        recent_songs = Song.objects.filter(played_counter__gte='5').order_by('-played_counter')[:10]
         query = request.GET.get("q")
         if query:
             albums = albums.filter(
@@ -324,7 +325,7 @@ def index(request):
                 'songs': song_results,
             })
         else:
-            return render(request, 'music/index.html', {'albums': albums})
+            return render(request, 'music/index.html', {'albums': albums,'recent_songs':recent_songs})
 
 
 def logout_user(request):
