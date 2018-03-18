@@ -2,7 +2,7 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth import logout
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
-from django.db.models import Q
+from django.db.models import Q, Sum
 from django.shortcuts import redirect
 from django.views.generic.edit import UpdateView
 from django.core.urlresolvers import reverse_lazy
@@ -311,6 +311,17 @@ def index(request):
         albums = Album.objects.filter(user=request.user)
         song_results = Song.objects.all()
         recent_songs = Song.objects.filter(played_counter__gte='5').order_by('-played_counter')[:10]
+        # temp = Song.objects.values('song_title').annotate(played_times=Sum('played_counter'))
+        # temp = None
+        temp = Song.objects.raw('select id,song_title,SUM(played_counter) AS sum from music_song group by song_title  having sum >4')
+        songname=[]
+        songcount=[]
+
+        for song in temp:
+            songname.append(song.song_title)
+            songcount.append(int(song.sum))
+
+
         query = request.GET.get("q")
         if query:
             albums = albums.filter(
@@ -325,7 +336,7 @@ def index(request):
                 'songs': song_results,
             })
         else:
-            return render(request, 'music/index.html', {'albums': albums,'recent_songs':recent_songs})
+            return render(request, 'music/index.html', {'albums': albums,'recent_songs':recent_songs,'songname':songname,'songcount':songcount})
 
 
 def logout_user(request):
