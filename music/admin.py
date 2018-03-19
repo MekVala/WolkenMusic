@@ -5,6 +5,3 @@ admin.site.register(Album)
 admin.site.register(Song)
 admin.site.register(Playlist)
 admin.site.register(PlaylistInfo)
-
-
-

@@ -10,6 +10,7 @@ from .forms import AlbumForm, SongForm, UserForm, PlaylistInfoForm , PlaylistFor
 from .models import Album, Song, Playlist, PlaylistInfo
 from mutagen.id3 import ID3
 import os.path
+from django.contrib import admin
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 AUDIO_FILE_TYPES = ['wav', 'mp3', 'ogg']
