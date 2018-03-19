@@ -1,0 +1,37 @@
+{% extends "admin/change_form.html" %}
+
+{% block after_related_objects %}
+    <div style="margin:20px">
+        <!--<div class="chart_container" style="height: 200px; width:200px; clear: both;">-->
+            <!--<canvas style="width:20px;height:20px;" id="myChart" width="50" height="50"></canvas>-->
+        <!--</div>-->
+    </div>
+<script>
+var ctx = document.getElementById("myChart").getContext('2d');
+{%autoescape off%}
+var myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: {{songname}}.map(function(e){
+            return e.substr(0, 10);
+        }),
+        datasets: [{
+            label: '# of Time Played',
+            data: {{songcount}},
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero:true
+                }
+            }]
+        }
+    }
+});
+
+{%endautoescape%}
+</script>
+{% endblock %}
