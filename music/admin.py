@@ -9,7 +9,7 @@ class MyUserAdmin(UserAdmin):
 
     def change_view(self, request, object_id, form_url='', extra_context=None):
         if extra_context is None:
-
+            # Add Here
         return super(MyUserAdmin, self).change_view(
             request, object_id=object_id, form_url=form_url, extra_context=extra_context)
 
