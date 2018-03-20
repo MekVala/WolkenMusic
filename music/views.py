@@ -6,7 +6,7 @@ from django.db.models import Q, Sum
 from django.shortcuts import redirect
 from django.views.generic.edit import UpdateView
 from django.core.urlresolvers import reverse_lazy
-from .forms import AlbumForm, SongForm, UserForm, PlaylistInfoForm , PlaylistForm
+from .forms import AlbumForm, SongForm, UserForm, PlaylistInfoForm , PlaylistForm, SharedPlaylistForm
 from .models import Album, Song, Playlist, PlaylistInfo
 from mutagen.id3 import ID3
 import os.path
@@ -73,11 +73,14 @@ def create_song(request, album_id):
                 'error_message': 'Audio file must be WAV, MP3, or OGG',
             }
             return render(request, 'music/create_song.html', context)
-        audio = ID3(song.audio_file)
-        if 'TIT2' in audio:
-            song.song_title = audio['TIT2'].text[0]
-        else:
-            song.song_title = song.audio_file;
+        try:
+            audio = ID3(song.audio_file)
+            if 'TIT2' in audio:
+                song.song_title = audio['TIT2'].text[0]
+            else:
+                song.song_title = song.audio_file
+        except Exception:
+            song.song_title = song.audio_file
         song.save()
         return render(request, 'music/detail.html', {'album': album})
     context = {
@@ -530,15 +533,6 @@ def index(request):
         for album in albums:
             for song in album.song_set.filter(played_counter__gte='5').order_by('-played_counter')[:10]:
                 recent_songs.append(song)
-
-        # temp = Song.objects.raw('select id,song_title,SUM(played_counter) '
-        #                         'AS sum from music_song group by song_title  having sum >4')
-        # songname=[]
-        # songcount=[]
-
-        # for song in temp:
-        #     songname.append(song.song_title)
-        #     songcount.append(int(song.sum))
         query = request.GET.get("q")
         if query:
             albums = albums.filter(
@@ -727,3 +721,18 @@ def create_playlist(request):
             playlist.save()
             return redirect('music:playlists', 'all')
         return render(request, 'music/create_playlist.html', {"form": form})
+
+
+def share_playlist(request,playlist_id):
+    if not request.user.is_authenticated():
+        return render(request, 'music/login.html')
+    else:
+        form = SharedPlaylistForm(request.POST or None,user=request.user)
+        if form.is_valid():
+            sharedplaylist = form.save(commit=False)
+            sharedplaylist.owner = request.user
+            sharedplaylist.playlist = get_object_or_404(Playlist, pk=playlist_id)
+            sharedplaylist.save()
+            return redirect('music:playlists', 'all')
+        return render(request, 'music/share_playlist.html', {"form": form})
+

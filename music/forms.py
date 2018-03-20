@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
-from .models import Album, Song, PlaylistInfo, Playlist
+from .models import Album, Song, PlaylistInfo, Playlist, SharedPlaylist
 
 
 class AlbumForm(forms.ModelForm):
@@ -38,3 +38,14 @@ class PlaylistForm(forms.ModelForm):
         model = Playlist
         fields = ['playlist_name']
 
+
+class SharedPlaylistForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super(SharedPlaylistForm, self).__init__(*args, **kwargs)
+        self.fields['shared'].queryset = self.fields['shared'].queryset.exclude(id=user.id)
+
+    class Meta:
+        model = SharedPlaylist
+        fields = ['shared']

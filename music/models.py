@@ -39,3 +39,9 @@ class PlaylistInfo(models.Model):
     playlist = models.ForeignKey(Playlist, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
     song = models.ForeignKey(Song)
+
+
+class SharedPlaylist(models.Model):
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='owner')
+    shared = models.ForeignKey(User, on_delete=models.CASCADE, related_name='shared')
+    playlist = models.ForeignKey(Playlist, on_delete=models.CASCADE)

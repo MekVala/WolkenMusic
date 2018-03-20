@@ -49,11 +49,18 @@
                                     <td>
                                         <form action="{% url 'music:delete_playlist' playlist.id %}" method="post" style="display: inline;">
                                         {% csrf_token %}
-                                        <input type="hidden" name="playlist_id" value="{{ playlist.id }}" />
-                                        <button type="submit" class="btn btn-danger btn-xs">
-                                            <span class="glyphicon glyphicon-remove"></span>&nbsp; Delete
-                                        </button>
-                                    </form>
+                                            <input type="hidden" name="playlist_id" value="{{ playlist.id }}" />
+                                            <button type="submit" class="btn btn-danger btn-xs">
+                                                <span class="glyphicon glyphicon-remove"></span>&nbsp; Delete
+                                            </button>
+                                        </form>
+                                        <form action="{% url 'music:share_playlist' playlist.id %}" method="post" style="display: inline;">
+                                        {% csrf_token %}
+                                            <input type="hidden" name="playlist_id" value="{{ playlist.id }}" />
+                                            <button type="submit" class="btn-success btn-xs">
+                                                <span class="glyphicon glyphicon-share"></span>&nbsp; Share
+                                            </button>
+                                        </form>
                                     </td>
                                 </tr>
                             {% endfor %}
