@@ -526,17 +526,19 @@ def index(request):
     else:
         albums = Album.objects.filter(user=request.user)
         song_results = Song.objects.all()
+        recent_songs = []
+        for album in albums:
+            for song in album.song_set.filter(played_counter__gte='5').order_by('-played_counter')[:10]:
+                recent_songs.append(song)
 
-        recent_songs = Song.objects.filter(played_counter__gte='5').order_by('-played_counter')[:10]
+        # temp = Song.objects.raw('select id,song_title,SUM(played_counter) '
+        #                         'AS sum from music_song group by song_title  having sum >4')
+        # songname=[]
+        # songcount=[]
 
-        temp = Song.objects.raw('select id,song_title,SUM(played_counter) '
-                                'AS sum from music_song group by song_title  having sum >4')
-        songname=[]
-        songcount=[]
-
-        for song in temp:
-            songname.append(song.song_title)
-            songcount.append(int(song.sum))
+        # for song in temp:
+        #     songname.append(song.song_title)
+        #     songcount.append(int(song.sum))
         query = request.GET.get("q")
         if query:
             albums = albums.filter(
@@ -551,7 +553,7 @@ def index(request):
                 'songs': song_results,
             })
         else:
-            return render(request, 'music/index.html', {'albums': albums, 'recent_songs': recent_songs, 'songname': songname, 'songcount': songcount})
+            return render(request, 'music/index.html', {'albums': albums, 'recent_songs': recent_songs})
 
 
 def logout_user(request):
