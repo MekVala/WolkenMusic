@@ -9,6 +9,8 @@ SECRET_KEY = 'rha7*we-io_dbhnf$k)%wum_i=-fct9+n^j+@5j9p*$z01lzj1'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+
 ALLOWED_HOSTS = []
 
 # Application definition
@@ -35,7 +37,7 @@ MIDDLEWARE_CLASSES = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'website.urls'
+ROOT_URLCONF = 'wolkenmusic.urls'
 
 TEMPLATES = [
     {
@@ -53,7 +55,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'website.wsgi.application'
+WSGI_APPLICATION = 'wolkenmusic.wsgi.application'
 '''
 # Database
 DATABASES = {
@@ -99,6 +101,13 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
+STATICFILES_DIRS = (
+    os.path.join(PROJECT_ROOT, 'static'),
+)
+
+STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
+
+STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
 
