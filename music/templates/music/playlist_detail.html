@@ -29,22 +29,23 @@
             </ul>
         </div>
     </div>
-
     <div class="row">
 
         <div class="col-sm-12">
-
             <div class="panel panel-default">
                 <div class="panel-body">
+                    {% if song_list %}
                     <table class="table">
                         <thead>
                             <tr>
                                 <th>Song Title</th>
                                 <th>Artist</th>
-                                <th>Audio File</th>
-                                <th>Album</th>
+                                <th>Audio</th>
                                 <th>Favorite</th>
-                                <th>Action</th>
+                                {% if request.POST %}
+                                {% else %}
+                                    <th>Action</th>
+                                {% endif %}
                             </tr>
                         </thead>
                         <tbody>
@@ -60,14 +61,10 @@
                                         </a>
                                     </td>
                                     <td>
-                                        <a href="{% url 'music:detail' song.album.id %}">
-                                            <img src="{{ song.album.album_logo.url }}" class="img-responsive" style="width: 20px; float: left; margin-right: 10px;" />
-                                        </a>
-                                        <a href="{% url 'music:detail' song.album.id %}">{{ song.album.album_title }}</a>
-                                    </td>
-                                    <td>
                                         <a href="{% url 'music:favorite' song.id %}" class="btn-favorite"><span class="glyphicon glyphicon-star {% if song.is_favorite %}active{% endif %}"></span></a>
                                     </td>
+                                    {% if request.POST %}
+                                    {% else %}
                                     <td>
                                         <form action="{% url 'music:remove_song' song.id %}" method="post" style="display: inline;">
                                         {% csrf_token %}
@@ -77,13 +74,16 @@
                                         </button>
                                     </form>
                                     </td>
+                                    {% endif %}
                                 </tr>
                             {% endfor %}
                         </tbody>
                     </table>
+                     {% else %}
+                        NO SONG ADDED !
+                      {% endif %}
                 </div>
             </div>
-
         </div>
 
     </div>

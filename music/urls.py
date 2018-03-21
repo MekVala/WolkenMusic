@@ -42,5 +42,7 @@ urlpatterns = [
     url(r'^playlists/(?P<playlist_id>[0-9]+)/songs/(?P<filter_by>[a-zA_Z]+)/prev/$',
         views.prevplaylist, name='prevplaylist'),
     url(r'^playlists/(?P<playlist_id>[0-9]+)/share/$', views.share_playlist, name='share_playlist'),
-
+    url(r'^sharedplaylist/(?P<filter_by>[a-zA_Z]+)/$', views.shared_playlist, name='shared_playlist'),
+    url(r'^sharedplaylist/(?P<playlist_id>[0-9]+)/(?P<user_id>[0-9]+)/(?P<filter_by>[a-zA_Z]+)/delete/$',
+        views.delete_shared_playlist, name='delete_shared'),
 ]

@@ -4,10 +4,11 @@ from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Q, Sum
 from django.shortcuts import redirect
+from django.contrib.auth.models import User
 from django.views.generic.edit import UpdateView
 from django.core.urlresolvers import reverse_lazy
 from .forms import AlbumForm, SongForm, UserForm, PlaylistInfoForm , PlaylistForm, SharedPlaylistForm
-from .models import Album, Song, Playlist, PlaylistInfo
+from .models import Album, Song, Playlist, PlaylistInfo, SharedPlaylist
 from mutagen.id3 import ID3
 import os.path
 from django.contrib import admin
@@ -735,4 +736,35 @@ def share_playlist(request,playlist_id):
             sharedplaylist.save()
             return redirect('music:playlists', 'all')
         return render(request, 'music/share_playlist.html', {"form": form})
+
+
+def shared_playlist(request, filter_by):
+    if not request.user.is_authenticated():
+        return render(request, 'music/login.html')
+    else:
+        if filter_by == 'shared':
+            share_playlists = SharedPlaylist.objects.filter(shared=request.user)
+        elif filter_by == 'sharing':
+            share_playlists = SharedPlaylist.objects.filter(owner=request.user)
+
+        return render(request,'music/shared_playlist.html', {'splaylist_list': share_playlists,
+                                                             'filter_by': filter_by})
+
+
+def delete_shared_playlist(request, playlist_id, user_id, filter_by):
+    if not request.user.is_authenticated():
+        return render(request, 'music/login.html')
+    else:
+        if filter_by == 'shared':
+            owner = get_object_or_404(User, pk=user_id)
+            playlist = get_object_or_404(Playlist, pk=playlist_id)
+            shared = get_object_or_404(User,pk=request.user.id)
+        elif filter_by == 'sharing':
+            owner = get_object_or_404(User,pk=request.user.id)
+            playlist = get_object_or_404(Playlist,pk=playlist_id)
+            shared = get_object_or_404(User, pk=user_id)
+
+        sharedplaylist = SharedPlaylist.objects.filter(owner=owner, playlist=playlist, shared=shared)
+        sharedplaylist.delete()
+        return render(request, 'music/shared_playlist.html', {'filter_by': filter_by})
 

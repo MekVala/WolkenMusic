@@ -1,0 +1,82 @@
+{% extends 'music/base.html' %}
+{% block title %}Playlist{% endblock %}
+{% block sharedplaylist_active %}active{% endblock %}
+{% block body %}
+{% if message %}
+    message
+{% endif %}
+
+    <div class="container-fluid songs-container">
+    <div class="row">
+        <div class="col-sm-12">
+            <ul class="nav nav-pills" style="margin-bottom: 10px;">
+                <li role="presentation" {% if filter_by == 'shared' %}class="active"{% endif %}><a href="{% url 'music:shared_playlist' 'shared' %}">Shared</a></li>
+                <li role="presentation" {% if filter_by == 'sharing' %}class="active"{% endif %}><a href="{% url 'music:shared_playlist' 'sharing' %}">Shared By Me</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    {% if error_message %}
+                        <p><strong>{{ error_message }}</strong></p>
+                    {% endif %}
+                    {% if splaylist_list %}
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Playlist Name</th>
+                                <th>By/To</th>
+                                <Action
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            {% for splaylist in splaylist_list %}
+                                <tr>
+                                    <td>
+                                        <form action="{% url 'music:playlist_songs' splaylist.playlist.id 'all' %}" method="post" style="display: inline;">
+                                        {% csrf_token %}
+                                            <input type="hidden" name="from_shared" value="true" />
+                                            <button type="submit" class="btn btn-link btn-xs">
+                                                {{ splaylist.playlist.playlist_name }}
+                                            </button>
+                                        </form>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        {% if filter_by == 'shared' %}
+                                            {{ splaylist.owner.username }}
+                                        {% else %}
+                                            {{ splaylist.shared.username }}
+                                        {% endif %}
+                                    </td>
+                                      <td>
+                                          {% if filter_by == 'shared' %}
+                                          <form action="{% url 'music:delete_shared' splaylist.playlist.id splaylist.owner.id filter_by %}" method="post" style="display: inline;">
+                                            {% else %}
+                                              <form action="{% url 'music:delete_shared' splaylist.playlist.id splaylist.shared.id filter_by %}" method="post" style="display: inline;">
+                                            {% endif %}
+                                            {% csrf_token %}
+                                                <input type="hidden" name="playlist_id" value="{{ splaylist.playlist.id }}" />
+                                                <button type="submit" class="btn btn-danger btn-xs">
+                                                    <span class="glyphicon glyphicon-remove"></span>&nbsp; Remove From Share
+                                                </button>
+                                            </form>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+
+                        </tbody>
+                    </table>
+                    {% else %}
+                        No Playlist To Show !
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
