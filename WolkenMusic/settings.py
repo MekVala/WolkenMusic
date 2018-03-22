@@ -111,10 +111,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
 
-AWS_STORAGE_BUCKET_NAME = 'wolkenmusic'
-AWS_ACCESS_KEY_ID = 'AKIAIYJ3FEF7N2U6HMQA'
-AWS_SECRET_ACCESS_KEY = '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'
-
 # Storage on S3 settings are stored as os.environsto keep settings.py clean
 # if not DEBUG:
 #     AWS_STORAGE_BUCKET_NAME = os.environ['AWS_STORAGE_BUCKET_NAME']
