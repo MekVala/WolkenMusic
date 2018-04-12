@@ -7,11 +7,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'rha7*we-io_dbhnf$k)%wum_i=-fct9+n^j+@5j9p*$z01lzj1'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = []
 
 # Application definition
 
@@ -24,8 +24,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_cleanup',
-    'storages',
-    'boto'
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -110,13 +108,3 @@ STATIC_URL = '/static/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
-
-# Storage on S3 settings are stored as os.environsto keep settings.py clean
-# if not DEBUG:
-#     AWS_STORAGE_BUCKET_NAME = os.environ['AWS_STORAGE_BUCKET_NAME']
-#     AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
-#     AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
-#     STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
-#     S3_URL = 'http://%s.s3.amazonaws.com/' % AWS_STORAGE_BUCKET_NAME
-#     MEDIA_URL = S3_URL
-#

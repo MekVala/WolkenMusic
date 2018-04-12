@@ -20,6 +20,14 @@ class SongForm(forms.ModelForm):
 class UserForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput)
 
+    def __init__(self, *args, **kwargs):
+        # first call parent's constructor
+        super(UserForm, self).__init__(*args, **kwargs)
+        # there's a `fields` property now
+        self.fields['password'].required = True
+        self.fields['username'].required = True
+        self.fields['email'].required = True
+
     class Meta:
         model = User
         fields = ['username', 'email', 'password']
